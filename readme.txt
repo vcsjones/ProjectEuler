@@ -1,0 +1,1 @@
+My work of Project Euler in F#.
