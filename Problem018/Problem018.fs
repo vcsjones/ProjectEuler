@@ -8,7 +8,7 @@
                               let previous = fun () -> y+(Seq.nth (i-1) acc)
                               if i=0 then current()
                               elif i=rowLen-1 then previous()
-                              else System.Math.Max(current() , previous())
+                              else max (current()) (previous())
                            )
               |> Seq.toList
          ) [0;]
