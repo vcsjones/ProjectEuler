@@ -8,7 +8,7 @@ let isPalindromic str =
    str = new string (str.ToCharArray() |> Array.rev)
 
 let answer = 
-   [1..999999]
+   [1..2..999999] //Skip even numbers. They always start with 1 and end in 0 in binary.
    |> Seq.map(fun x -> (x, changeBase x 2))
    |> Seq.filter(fun (x,y) -> isPalindromic (string x) && isPalindromic y)
    |> Seq.sumBy fst
