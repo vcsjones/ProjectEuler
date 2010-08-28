@@ -1,4 +1,6 @@
-﻿let d n = ([1L..n|>float|>sqrt|>int64]
+﻿printfn "start = %O" System.DateTime.Now
+
+let d n = ([1L..n|>float|>sqrt|>int64]
              |> Seq.filter(fun x -> n%x=0L)
              |> Seq.map(fun x -> x+n/x)
              |> Seq.sum) - n
@@ -11,4 +13,8 @@ let answer =
          |> Seq.map(fun (x, y) -> x)
          |> Seq.sum
 
+
+printfn "finish = %O" System.DateTime.Now
 printfn "answer = %d" answer
+
+System.Console.ReadKey(true) |> ignore

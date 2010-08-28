@@ -1,6 +1,6 @@
 ﻿let answer = 
    System.IO.File.ReadLines(".\\triangle.txt")
-   |> Seq.map(fun x -> x.Split(' ') |> Seq.map(fun y -> y|>int))
+   |> Seq.map(fun x -> x.Split(' ') |> Seq.map(fun y -> int(y)))
    |> Seq.fold(fun acc x -> 
             let rowLen = Seq.length x
             x |> Seq.mapi(fun i y -> 
@@ -11,7 +11,7 @@
                               else max (current()) (previous())
                            )
               |> Seq.toList
-         ) [0;]
+         ) [0]
    |> List.max
 
 printfn "answer = %d" answer
