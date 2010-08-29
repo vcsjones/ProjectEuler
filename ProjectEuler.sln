@@ -66,6 +66,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem035", "Problem035\Pr
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem042", "Problem042\Problem042.fsproj", "{C6FCE018-3264-4E21-99A3-BDC84FAA8D74}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem034", "Problem034\Problem034.fsproj", "{F17B1609-FEC6-4715-BE0C-CAD5496AE193}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -192,6 +194,10 @@ Global
 		{C6FCE018-3264-4E21-99A3-BDC84FAA8D74}.Debug|x86.Build.0 = Debug|x86
 		{C6FCE018-3264-4E21-99A3-BDC84FAA8D74}.Release|x86.ActiveCfg = Release|x86
 		{C6FCE018-3264-4E21-99A3-BDC84FAA8D74}.Release|x86.Build.0 = Release|x86
+		{F17B1609-FEC6-4715-BE0C-CAD5496AE193}.Debug|x86.ActiveCfg = Debug|x86
+		{F17B1609-FEC6-4715-BE0C-CAD5496AE193}.Debug|x86.Build.0 = Debug|x86
+		{F17B1609-FEC6-4715-BE0C-CAD5496AE193}.Release|x86.ActiveCfg = Release|x86
+		{F17B1609-FEC6-4715-BE0C-CAD5496AE193}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
