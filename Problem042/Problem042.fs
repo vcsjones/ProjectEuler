@@ -9,8 +9,8 @@ let wordValue (str:string) =
    |> float
 
 let isTriangleNumber n = 
-   [for x in [1.0..n] -> t x]
-   |> List.exists(fun x -> x = n)
+   [for x in [1.0..n] do if (t x) = n then yield n]
+   |> List.length > 0
 
 let answer = 
    File.ReadLines(".\\words.txt")
