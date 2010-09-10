@@ -9,8 +9,7 @@ let answer =
          let primes = 
             Seq.unfold(fun x -> Some(x, x+1)) 0
             |> Seq.takeWhile(fun x -> isPrime (quad x a b))
-         let len = primes |> Seq.length
-         yield (len, a, b)
+         yield (primes |> Seq.length, a, b)
    }
    |> Seq.maxBy(fun (x, _, _) -> x)
 
