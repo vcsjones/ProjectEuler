@@ -1,17 +1,8 @@
 ﻿let counter upto = 
-   let rec loop n i = 
-      if i > upto then 1
-      else
-         let numbers =
-            Seq.unfold(fun x -> Some(x, x+i)) n
-            |> Seq.skip 1
-            |> Seq.take 4
-            |> Seq.toList
-            |> List.rev
-         let sum = numbers |> List.sum
-         let head = numbers |> List.head
-         sum + loop head (i+2)
-   loop 1 2
+   (Seq.unfold(fun (x, i, c) -> Some((x, i, c),(x+i, (if c%4=0 then i+2 else i), c+1))) (3, 2, 2)
+   |> Seq.map(fun (x, _, _) -> x)
+   |> Seq.take (upto * 2 - 2)
+   |> Seq.sum) + 1
 
 let answer = counter 1001
 
