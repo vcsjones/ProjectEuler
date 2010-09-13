@@ -1,19 +1,21 @@
-﻿let isReversible n = 
-   let str = n.ToString()
-//   let digits = str.ToCharArray() |> Array.map(fun x -> int(x) - 0x30)
-//   if digits |> Array.forall(fun x -> x%2=0) then
-//      false
-//   else
-   let revInt = int(new string(str.ToCharArray() |> Array.rev))
-   (n + revInt).ToString().ToCharArray()
-   |> Array.exists(fun x -> (int(x) - 0x30)%2=0)
-   |> not
-      
+﻿let reverseNumber n = 
+   int(new string(n.ToString().ToCharArray() |> Array.rev))
 
+let allDigitsOdd n = 
+   n.ToString().ToCharArray()
+   |> Seq.map(fun x -> int(x) - 0x30)
+   |> Seq.forall(fun x -> x%2<>0)
+
+let mutable counter = 0
+
+let asyncFilter n = 
+      let sum = n + reverseNumber n
+      if sum%2<>0 && allDigitsOdd sum then
+        counter <- counter+1
 
 let answer = 
-   {1..999}
-   |> Seq.filter (fun x -> isReversible x)
-   |> Seq.iter(fun x -> printfn "%d" x)
+   {1..999999999}
+   |> Seq.filter(fun x -> x%10<>0)
+   |> Seq.iter(fun x -> asyncFilter x)
 
-//printfn "answer = %d" answer
+printfn "answer = %d" counter
