@@ -14,8 +14,8 @@ let isTriangleNumber n =
 
 let answer = 
    File.ReadLines(".\\words.txt")
-   |> Seq.filter(fun x -> isTriangleNumber (wordValue x))
-   |> Seq.toArray
+   |> Seq.map wordValue
+   |> Seq.filter isTriangleNumber
    |> Seq.length
 
 printfn "answer = %d" answer
