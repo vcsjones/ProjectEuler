@@ -1,7 +1,7 @@
 ﻿let hugeSum =
-   ([1I..1000I]
-   |> Seq.fold(fun acc x -> acc + (x**int(x))) (0I)
-   ).ToString("R")
+   [1..1000]
+   |> Seq.sumBy(fun x -> bigint x**x)
+   |> string
 
 let answer = hugeSum.[(hugeSum.Length - 10)..]
 printfn "answer = %s" answer
