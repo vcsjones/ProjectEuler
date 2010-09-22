@@ -22,8 +22,9 @@
 
 let answer = 
    string
+   |> Seq.map(fun x -> int x - 0x30)
    |> Seq.windowed 5
-   |> Seq.map(fun x -> x |> Seq.fold(fun acc x -> acc*(int x - 0x30)) 1)
+   |> Seq.map(Seq.reduce(fun acc x -> acc * x))
    |> Seq.max
 
 
