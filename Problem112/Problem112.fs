@@ -10,12 +10,12 @@
    loop(nstr |> Seq.pairwise |> Seq.toList, false, false)
 
 let answer =
-   let rec loop (s:List<int>, count:decimal, numBouncy:decimal) = 
+   let rec loop (s:List<int>, numBouncy:decimal) = 
       match s with
-      | head :: tail when numBouncy/count=0.99M -> head-1
-      | head :: tail when isBouncy head -> loop(tail,count+1M, numBouncy+1M)
-      | _ :: tail -> loop(tail, count+1M, numBouncy)
+      | head :: tail when numBouncy/decimal (head-1)=0.99M -> head-1
+      | head :: tail when isBouncy head -> loop(tail, numBouncy+1M)
+      | _ :: tail -> loop(tail, numBouncy)
       | [] -> failwith("Unable to solve")
-   loop([2..9999999], 1M, 0M)
+   loop([101..9999999], 0M)
 
 printfn "answer = %d" answer
