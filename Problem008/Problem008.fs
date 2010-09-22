@@ -23,7 +23,7 @@ let string =  Regex.Replace(
                              71636269561882670428252483600823257530420752963450", "\\D", System.String.Empty)
 
 let answer = 
-   string.ToCharArray()
+   string
    |> Seq.windowed 5
    |> Seq.map(fun x -> x |> Seq.fold(fun acc x -> acc*(int x - 0x30)) 1)
    |> Seq.max
