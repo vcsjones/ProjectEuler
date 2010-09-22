@@ -23,12 +23,10 @@ let string =  Regex.Replace(
                              71636269561882670428252483600823257530420752963450", "\\D", System.String.Empty)
 
 let answer = 
-   seq {
-   for i in 0..string.Length-5 do
-      let number = string.Substring(i, 5).ToCharArray()
-                  |> Array.map(fun x -> System.Int32.Parse(x.ToString()))
-                  |> Array.fold(fun acc n -> acc*n) 1
-      yield number
-   } |> Seq.max
+   string.ToCharArray()
+   |> Seq.windowed 5
+   |> Seq.map(fun x -> x |> Seq.fold(fun acc x -> acc*(int x - 0x30)) 1)
+   |> Seq.max
+
 
 printfn "answer = %d" answer
