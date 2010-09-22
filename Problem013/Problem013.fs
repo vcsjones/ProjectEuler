@@ -101,10 +101,11 @@ let numbersString = "37107287533902102798797998220837590246510135740250
                      20849603980134001723930671666823555245252804609722
                      53503534226472524250874054075591789781264330331690"
 
-let numbers =     Regex.Split(numbersString, System.Environment.NewLine)
-               |> Array.map(fun x -> System.Text.RegularExpressions.Regex.Replace(x, "\\D", ""))
-               |> Array.map(fun x -> bigint.Parse(x))
-               |> Array.sum
-               |> string
+let numbers =
+   Regex.Split(numbersString, System.Environment.NewLine)
+   |> Array.map(fun x -> System.Text.RegularExpressions.Regex.Replace(x, "\\D", ""))
+   |> Array.map(fun x -> bigint.Parse(x))
+   |> Array.sum
+   |> string
 
 printfn "%s" (numbers.Substring(0, 10))

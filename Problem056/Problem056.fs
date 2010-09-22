@@ -5,8 +5,7 @@
                yield a**b
        }
 
-   |> Seq.map(fun x -> x.ToString("R").ToCharArray())
-   |> Seq.map(fun x -> x |> Seq.map(fun y -> int(y) - 0x30) |> Seq.sum)
+   |> Seq.map(fun x -> x.ToString("R") |> Seq.sumBy(fun y -> int y - 0x30))
    |> Seq.max
 
 printfn "answer = %d" answer

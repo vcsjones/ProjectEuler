@@ -14,4 +14,4 @@ let answer =
    let str = (28433I*fastPow(2I,7830457I)+1I).ToString("R")
    str.[(str.Length - 10)..]
 
-printfn "test = %s" answer
+printfn "answer = %s" answer

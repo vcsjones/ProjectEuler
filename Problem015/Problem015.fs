@@ -4,7 +4,7 @@
 let pascalTriangle = 
      seq (20L*2L)
      |> Seq.skipWhile(fun (entry,col) -> col <= 20L)
-     |> Seq.nth 0
+     |> Seq.head
      |> fst
 
 printfn "answer = %d" pascalTriangle

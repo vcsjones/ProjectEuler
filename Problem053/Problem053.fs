@@ -1,7 +1,7 @@
 ﻿let fact n =
    match n with
    | n when n = 0I -> 1I
-   | _ -> [2I .. n] |> Seq.fold(fun acc n -> acc*n) 1I
+   | _ -> [1I .. n] |> Seq.reduce(fun acc n -> acc*n)
 
 let c n r = 
    (fact n) / (fact r * fact(n - r))

@@ -1,9 +1,12 @@
-﻿let factorial n = [1UL .. n] |> Seq.fold(fun acc n -> acc*n) 1UL
+﻿let factorial n = 
+   match n with
+   | 0UL -> 1UL
+   | _ -> [1UL .. n] |> Seq.reduce(fun acc n -> acc*n)
 
 let factDigits n = 
-   n.ToString().ToCharArray()
-   |> Array.map(fun x -> int(x) - 0x30)
-   |> Array.fold(fun acc x -> factorial (uint64(x)) + acc) 0UL
+   n.ToString()
+   |> Seq.map(fun x -> int x - 0x30)
+   |> Seq.sumBy(fun x -> factorial(uint64 x))
 
 let countFactorial n = 
    let factChain =  Set.singleton n

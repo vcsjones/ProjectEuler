@@ -25,7 +25,7 @@ let answer =
             |> Array.mapi(fun i x -> pwd.[specMod (i+1)] ^^^ x)
          let text = System.Text.Encoding.ASCII.GetString(decryptedBytes)
          if text.Contains("the") && text.Contains("was") && text.Contains("so") && text.EndsWith(".") then
-            yield decryptedBytes |> Array.fold(fun acc x -> acc + int(x)) 0
+            yield decryptedBytes |> Array.sumBy(fun x -> int x)
    }
    |> Seq.head
 
