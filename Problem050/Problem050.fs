@@ -13,12 +13,31 @@ let sieve n =
                    knownComposites.Add(j) |> ignore 
     }
 
-let primes = sieve 1000000
+let primes = sieve 999999 |> Seq.cache
 
 let check n = 
    async {
-      return Some(n, 0)
+      if n = 2 || n = 3 then return None
+      else
+         let primesToHalf = primes |> Seq.takeWhile(fun x -> x <= int(ceil(float n / 2.0)))
+         let countPrimes start = 
+            let rec loop(primeList,sum,count) = 
+               match primeList with
+               | head :: tail when head + sum = n -> Some(n, count)
+               | head :: tail -> loop(tail,head+sum,count+1)
+               | [] -> None
+            loop(primesToHalf |> Seq.skipWhile(fun x -> x < start) |> Seq.toList, 0, 1)
+         let primeCounts =
+               primesToHalf
+               |> Seq.map(fun x -> (x, countPrimes x))
+               |> Seq.filter(fun (_, x) -> Option.isSome x)
+         let result = 
+            match primeCounts with
+            | a when a |> Seq.isEmpty -> None
+            | a -> a |> Seq.maxBy fst |> snd
+         return result
    }
+
 
 let answer = 
    primes
@@ -29,4 +48,4 @@ let answer =
    |> Seq.maxBy snd
    |> fst
 
-printfn "answer = %d" answer
+printfn "answer = %A" answer
