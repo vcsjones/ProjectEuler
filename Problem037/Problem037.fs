@@ -12,7 +12,7 @@ let sieve n =
                    knownComposites.Add(j) |> ignore
    }
 
-let primes = sieve 1000000 |> Seq.cache
+let primes = sieve 1000000 |> Seq.toList
 let primeHashset = new HashSet<int>(primes)
 
 let truncates n =
