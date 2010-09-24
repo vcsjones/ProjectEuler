@@ -19,7 +19,7 @@ let check n =
    async {
       if n = 2 || n = 3 then return None
       else
-         let primesToHalf = primes |> Seq.takeWhile(fun x -> x <= int(ceil(float n / 2.0)))
+         let primesToHalf = primes |> Seq.takeWhile(fun x -> x <= int(ceil(float n / 2.0))) |> Seq.toList
          let countPrimes start = 
             let rec loop(primeList,sum,count) = 
                match primeList with
