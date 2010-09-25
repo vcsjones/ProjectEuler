@@ -11,10 +11,8 @@ let countFactors (n:int) =
       loop("", 1)
 
 let answer = 
-   [2..500000]
-   |> List.map(fun x -> async {return countFactors x })
-   |> Async.Parallel
-   |> Async.RunSynchronously
+   [2..10000]
+   |> List.map countFactors
    |> Seq.choose(fun x -> x)
    |> Seq.max
 
