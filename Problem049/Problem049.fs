@@ -39,7 +39,7 @@ let str (x,y,z) = string x + string y + string z
 
 let answer = 
    solutions
-   |> Seq.filter(fun (x, y, z) -> x <> 1487)
+   |> Seq.filter(fun (x, _, _) -> x <> 1487)
    |> Seq.head
    |> str
 

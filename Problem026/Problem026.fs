@@ -13,6 +13,14 @@ let rec gcd n1 n2 =
    | 0 -> n1
    | _ -> gcd n2 (n1%n2)
 
+let totient n = 
+   [1..n]
+   |> List.filter(fun x -> gcd x n = 1)
+   |> List.length
+
 let multOrder a m =
-   assert(gcd a m = 1)
-   
+   if (gcd a m) <> 1 then failwith "Arguments are not coprime"
+   else
+      0
+
+printfn "test = %d" (totient 2)
