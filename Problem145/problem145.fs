@@ -22,8 +22,8 @@ let actImpl n pls loc =
          else
             loc
 
-let mutable counter = 0
+let counter = ref 0
 
-Parallel.For(1, 1000000000, (fun () -> 0), actImpl, (fun n -> Interlocked.Add(&counter, n) |> ignore)) |> ignore
+Parallel.For(1, 1000000000, (fun () -> 0), actImpl, (fun n -> Interlocked.Add(counter, n) |> ignore)) |> ignore
 
-printfn "answer = %d" counter
+printfn "answer = %d" !counter
