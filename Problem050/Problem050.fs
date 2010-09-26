@@ -13,7 +13,7 @@ let sieve n =
                    knownComposites.Add(j) |> ignore 
     }
 
-let primes = sieve 999999 |> Seq.cache
+let primes = sieve 999999 |> Seq.filter(fun x -> x < 250000) |> Seq.cache
 
 let check n = 
    async {
@@ -24,6 +24,7 @@ let check n =
             let rec loop(primeList,sum,count) = 
                match primeList with
                | head :: tail when head + sum = n -> Some(n, count)
+               | head :: tail when head + sum > n -> None
                | head :: tail -> loop(tail,head+sum,count+1)
                | [] -> None
             loop(primesToHalf |> Seq.skipWhile(fun x -> x < start) |> Seq.toList, 0, 1)

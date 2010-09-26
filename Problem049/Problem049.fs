@@ -36,11 +36,11 @@ let solutions = seq {
    }
 
 let str (x,y,z) = string x + string y + string z
-let xval (x,_,_) = x
 
 let answer = 
    solutions
-   |> Seq.filter(fun x -> xval x <> 1487)
+   |> Seq.filter(fun (x, y, z) -> x <> 1487)
    |> Seq.head
+   |> str
 
-printfn "answer = %s" (str answer)
+printfn "answer = %s" answer

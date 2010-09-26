@@ -1,6 +1,6 @@
 ﻿let cipherData = 
    System.IO.File.ReadAllText(".\\cipher1.txt").Split(',')
-   |> Seq.map(fun x -> x.Trim() |> byte) |> Seq.cache
+   |> Seq.map(byte) |> Seq.cache
 
 let passwords n =
    let max = int(ceil(float n/3.0))
