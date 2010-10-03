@@ -10,11 +10,11 @@
    loop(nstr |> Seq.pairwise |> Seq.toList, false, false)
 
 let answer =
-   let rec loop (s:int, numBouncy:decimal) = 
+   let rec loop s numBouncy = 
       match s with
-      | _ when numBouncy/decimal (s-1)=0.99M -> s-1
-      | s when isBouncy s -> loop(s+1, numBouncy+1M)
-      | _  -> loop(s+1, numBouncy)
-   loop(101, 0M)
+      | _ when numBouncy/decimal (s)=0.99M -> s
+      | s when isBouncy s -> loop (s+1) (numBouncy+1M)
+      | _  -> loop (s+1) numBouncy
+   loop 101 -1M
 
 printfn "answer = %d" answer
