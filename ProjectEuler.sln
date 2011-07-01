@@ -122,6 +122,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem038", "Problem038\Pr
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem032", "Problem032\Problem032.fsproj", "{DD118E0C-D6E7-42F0-AA87-4123AB61559C}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem039", "Problem039\Problem039.fsproj", "{4C8FB8AD-AAEF-4CEA-AA1C-486B0112E4B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -360,6 +362,10 @@ Global
 		{DD118E0C-D6E7-42F0-AA87-4123AB61559C}.Debug|x86.Build.0 = Debug|x86
 		{DD118E0C-D6E7-42F0-AA87-4123AB61559C}.Release|x86.ActiveCfg = Release|x86
 		{DD118E0C-D6E7-42F0-AA87-4123AB61559C}.Release|x86.Build.0 = Release|x86
+		{4C8FB8AD-AAEF-4CEA-AA1C-486B0112E4B3}.Debug|x86.ActiveCfg = Debug|x86
+		{4C8FB8AD-AAEF-4CEA-AA1C-486B0112E4B3}.Debug|x86.Build.0 = Debug|x86
+		{4C8FB8AD-AAEF-4CEA-AA1C-486B0112E4B3}.Release|x86.ActiveCfg = Release|x86
+		{4C8FB8AD-AAEF-4CEA-AA1C-486B0112E4B3}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
