@@ -1,26 +1,40 @@
 ﻿open System.Text.RegularExpressions
 
-let ones = [|"zero"; "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine"|]
-let tens = [|"zero"; "ten"; "twenty"; "thirty"; "forty"; "fifty"; "sixty"; "seventy"; "eighty"; "ninety" |]
+let ones = [|""; "one"; "two"; "three"; "four"; "five"; "six"; "seven"; "eight"; "nine"|]
+let tens = [|""; "ten"; "twenty"; "thirty"; "forty"; "fifty"; "sixty"; "seventy"; "eighty"; "ninety"|]
+let teen = [|"ten"; "eleven"; "twelve"; "thirteen"; "fourteen"; "fifteen"; "sixteen"; "seventeen"; "eighteen"; "nineteen"|]
 
-let lookup =   [|
-                  ones
-                  tens
-                  [|for w in ones -> w + " hundred"|]
-                  [|for w in ones -> w + " thousand"|]
-               |]
+let wordify n = 
+    let word = 
+        let rec dev s i = 
+            let str = n.ToString()
+            if (i = str.Length) then s
+            else
+                let digit = int(str.Substring(str.Length - 1 - i, 1))
+                let remainder = int(str.Substring(str.Length - 1 - i))
+                let mutable build = s
+                let word = 
+                    match i with
+                    | 0 -> ones.[digit]
+                    | 1 -> 
+                            match tens.[digit] with
+                            | "ten" -> build<-""; teen.[int(str.Substring(str.Length - i, 1))]
+                            | a -> a
+                    | 2 -> ones.[digit] + " hundred and"
+                    | 3 -> ones.[digit] + " thousand"
+                dev (word + " " + build) (i+1)
+        dev "" 0
+    if n = 1000 then "one thousand" else
+        let mutable trim = word.Trim()
+        if trim.EndsWith(" and") then trim.Substring(0, trim.Length - 4) else trim
 
-let translate n = 
-   let numberStr = n.ToString()
-   let rec loop (ns:string, arrPos) = 
-      let ordinal = System.Int32.Parse(ns.Substring(0, 1))
-      let trans = lookup.[arrPos].[ordinal]
-      if Regex.IsMatch(ns, "^(0)+$") then System.String.Empty
-      elif ns.Length = 1 then trans
-      elif ns.Length = 3 && not(Regex.IsMatch(ns, "^(0)+$")) then trans + " and " + loop(ns.Substring(1), arrPos-1)
-      else trans + " " + loop(ns.Substring(1), arrPos-1)
-   loop (numberStr, numberStr.Length - 1)
+let count (n:string) = 
+    n.Replace(" ", "").Replace(" ", "").Length
 
+let answer = 
+    [1..1000]
+    |> Seq.map wordify
+    |> Seq.map count
+    |> Seq.sum
 
-let answer = translate 100
-printfn "answer = %s" (answer.TrimEnd())
+printfn "answer = %i" answer
