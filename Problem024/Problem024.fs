@@ -1,21 +1,13 @@
-﻿let numbers = [|0;1;2|]//;3;4;5;6;7;8;9|]
+let numbers = [0;1;2;3;4;5;6;7;8;9]
 
-let rotate arr = 
-   seq {
-      let len = Array.length arr
-      for x in [0..len-1] do
-      yield arr |> Array.permute(fun i -> (i + x) % len)
-   }
+let rec permutations list taken =
+    seq {
+        if Set.count taken = List.length list then yield [] else
+            for l in list do
+                if not (Set.contains l taken) then
+                    for perm in permutations list (Set.add l taken)  do
+                        yield l::perm }
 
-let rec permute (arr:array<int>) =
-   let head = [|arr.[0]|]
-   let remainder = arr.[1..]
-   let rotateRemainder = remainder |> rotate
-   seq {
-      for x in rotateRemainder do
-         let permuteRemainder = permute x
-         yield! permuteRemainder
-   }
-
-let r =
-   numbers |> permute |> Seq.iter(fun x -> printfn "%A" x)
+let p = permutations numbers Set.empty
+let answer = p |> Seq.skip 999999 |> Seq.head
+printfn "%A" answer
