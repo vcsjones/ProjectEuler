@@ -138,6 +138,10 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem357", "Problem357\Pr
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem096", "Problem096\Problem096.fsproj", "{5ABAED47-ED15-4E49-B51A-238F5824FF81}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem099", "Problem099\Problem099.fsproj", "{C22AFDE0-214E-4AF6-8A4D-ED534032B091}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Problem081", "Problem081\Problem081.fsproj", "{3C928B28-0D50-4963-A77E-29082F808D18}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -408,6 +412,14 @@ Global
 		{5ABAED47-ED15-4E49-B51A-238F5824FF81}.Debug|x86.Build.0 = Debug|x86
 		{5ABAED47-ED15-4E49-B51A-238F5824FF81}.Release|x86.ActiveCfg = Release|x86
 		{5ABAED47-ED15-4E49-B51A-238F5824FF81}.Release|x86.Build.0 = Release|x86
+		{C22AFDE0-214E-4AF6-8A4D-ED534032B091}.Debug|x86.ActiveCfg = Debug|x86
+		{C22AFDE0-214E-4AF6-8A4D-ED534032B091}.Debug|x86.Build.0 = Debug|x86
+		{C22AFDE0-214E-4AF6-8A4D-ED534032B091}.Release|x86.ActiveCfg = Release|x86
+		{C22AFDE0-214E-4AF6-8A4D-ED534032B091}.Release|x86.Build.0 = Release|x86
+		{3C928B28-0D50-4963-A77E-29082F808D18}.Debug|x86.ActiveCfg = Debug|x86
+		{3C928B28-0D50-4963-A77E-29082F808D18}.Debug|x86.Build.0 = Debug|x86
+		{3C928B28-0D50-4963-A77E-29082F808D18}.Release|x86.ActiveCfg = Release|x86
+		{3C928B28-0D50-4963-A77E-29082F808D18}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
