@@ -1,6 +1,9 @@
 ﻿open System.IO
 open System.Text.RegularExpressions
 
+let tm apply t =
+    (t |> fst |> apply, t |> snd |> apply)
+
 let problems =
     Regex.Split(File.ReadAllText("sudoku.txt"), @"^Grid \d\d", RegexOptions.Multiline)
     |> Array.filter(fun x -> x.Trim().Length > 0)
@@ -53,23 +56,57 @@ let simpleSolve (a:int[,]) =
         if affected = 0 then a else doSolve a
     doSolve a
 
-//Use a guess and check method. Iterate over all possible answers
-let complexSolve (a:int[,]) =
-    let a = a |> Array2D.copy
+let getZeros (a:int[,]) =
+    seq {
     let w = (a |> Array2D.length1)-1
     let h = (a |> Array2D.length2)-1
-    a
+    for x in [0.. w] do
+            for y in [0.. h] do
+                if a.[y,x] = 0 then yield (x,y)
+    }
 
 
-let solve (a:int[,]) =
-    a |> simpleSolve |> complexSolve
-
+//Verify it is solved correctly
+//Has overhead. Review candidate.
 let isSolved (a:int[,]) = 
-    a |> flatten |> Array.forall(fun x -> x <> 0)
+    let w = (a |> Array2D.length1) - 1
+    let h = (a |> Array2D.length2) - 1
+    let mutable pass = true
+    for x in [0..w] do
+        for y in [0..h] do
+            let coordinate = (x, y)
+            let quad = quadrant a coordinate |> flatten |> Set.ofArray = numbers
+            let ax = axes a coordinate |> tm (fun x -> x |> Set.ofArray = numbers)
+            pass <- pass && quad && fst ax && snd ax
+    pass
+
+let inline increment (a:int[,]) (x:int, y:int) (n:int) = 
+    a.[y, x] <- n
+
+let complexSolve (a:int[,]) = 
+    let a = a |> Array2D.copy
+    let zeros = getZeros a
+                |> Seq.map(fun x -> (x, solutions a x)) 
+                |> Seq.toArray
+                |> Array.sortBy(fun (_, x) -> x |> Array.length)
+    zeros //Initialize...
+    |> Seq.iter(fun ((x, y), i) -> a.[y, x] <- i.[0])
+    let rec incrementAndCheck(a:int[,], last:int) =
+        
+        if isSolved a then a //Solved!
+        else
+            let theI = zeros.[0] 
+            if (last < 9) then 
+                increment a (fst theI) (last+1)
+                incrementAndCheck(a, last+1)
+            else a
+    incrementAndCheck(a, 0)
+
 
 let answers = 
     problems
-    |> Array.map solve
-    |> Array.filter(fun x -> not (isSolved(x)))
+    |> Seq.map simpleSolve
+    |> Seq.map complexSolve
+    |> Seq.nth 0
 
 printfn "%A" (answers)
