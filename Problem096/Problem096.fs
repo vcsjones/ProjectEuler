@@ -1,16 +1,15 @@
-﻿let arr =
-    array2D
-        [
-            [0; 0; 3; 0; 2; 0; 6; 0; 0;];
-            [9; 0; 0; 3; 0; 5; 0; 0; 1;];
-            [0; 0; 1; 8; 0; 6; 4; 0; 0;];
-            [0; 0; 8; 1; 0; 2; 9; 0; 0;];
-            [7; 0; 0; 0; 0; 0; 0; 0; 8;];
-            [0; 0; 6; 7; 0; 8; 2; 0; 0;];
-            [0; 0; 2; 6; 0; 9; 5; 0; 0;];
-            [8; 0; 0; 2; 0; 3; 0; 0; 9;];
-            [0; 0; 5; 0; 1; 0; 3; 0; 0;]
-        ]
+﻿open System.IO
+open System.Text.RegularExpressions
+
+let problems =
+    Regex.Split(File.ReadAllText("sudoku.txt"), @"^Grid \d\d", RegexOptions.Multiline)
+    |> Array.filter(fun x -> x.Trim().Length > 0)
+    |> Array.map(fun x -> 
+                        let y = Regex.Split(x.Trim(), @"\r\n")
+                                |> Array.map(fun x -> x.ToCharArray() |> Array.map(fun x -> int(x) - 0x30))
+                        array2D(y))
+
+assert (problems |> Array.length = 50)
 
 let numbers = [|1..9|] |> Set.ofArray
 
@@ -36,6 +35,8 @@ let solutions (a:int[,]) (x:int, y:int) =
     let excludes = quadExclude |> Array.append axesExclude |> Set.ofArray
     numbers - excludes |> Set.toArray
 
+//Fill in all of the places that require no guessing. This can also be used
+//On complex problems to reduce the complexity for spaces that have known answers
 let simpleSolve (a:int[,]) =
     let a = a |> Array2D.copy
     let w = (a |> Array2D.length1)-1
@@ -52,10 +53,23 @@ let simpleSolve (a:int[,]) =
         if affected = 0 then a else doSolve a
     doSolve a
 
+//Use a guess and check method. Iterate over all possible answers
+let complexSolve (a:int[,]) =
+    let a = a |> Array2D.copy
+    let w = (a |> Array2D.length1)-1
+    let h = (a |> Array2D.length2)-1
+    a
+
+
 let solve (a:int[,]) =
-    let simple = simpleSolve a
-    simple
+    a |> simpleSolve |> complexSolve
 
-let answer = solve arr
+let isSolved (a:int[,]) = 
+    a |> flatten |> Array.forall(fun x -> x <> 0)
 
-printfn "%A" answer
+let answers = 
+    problems
+    |> Array.map solve
+    |> Array.filter(fun x -> not (isSolved(x)))
+
+printfn "%A" (answers)
