@@ -4,6 +4,9 @@ open System.Text.RegularExpressions
 let tm apply t =
     (t |> fst |> apply, t |> snd |> apply)
 
+module Array =
+    let last (a:'T[]) = a.[(a |> Array.length) - 1]
+
 let problems =
     Regex.Split(File.ReadAllText("sudoku.txt"), @"^Grid \d\d", RegexOptions.Multiline)
     |> Array.filter(fun x -> x.Trim().Length > 0)
@@ -11,8 +14,6 @@ let problems =
                         let y = Regex.Split(x.Trim(), @"\r\n")
                                 |> Array.map(fun x -> x.ToCharArray() |> Array.map(fun x -> int(x) - 0x30))
                         array2D(y))
-
-assert (problems |> Array.length = 50)
 
 let numbers = [|1..9|] |> Set.ofArray
 
@@ -80,8 +81,19 @@ let isSolved (a:int[,]) =
             pass <- pass && quad && fst ax && snd ax
     pass
 
-let inline increment (a:int[,]) (x:int, y:int) (n:int) = 
-    a.[y, x] <- n
+let incrementWorkState(ws:(int * array<int>)[]) = 
+    let rec inc (i:int) = 
+        let item = ws.[i]
+        let current = fst item
+        let possibles = snd item
+        let last = possibles |> Array.last
+        if current <> last then
+            let next = possibles.[(possibles |> Array.findIndex(fun x -> x = current))+1]
+            let newItem = (next, possibles)
+            printfn "%A" newItem
+            ws.[i] <- newItem
+    inc 0
+        
 
 let complexSolve (a:int[,]) = 
     let a = a |> Array2D.copy
@@ -89,24 +101,13 @@ let complexSolve (a:int[,]) =
                 |> Seq.map(fun x -> (x, solutions a x)) 
                 |> Seq.toArray
                 |> Array.sortBy(fun (_, x) -> x |> Array.length)
-    zeros //Initialize...
-    |> Seq.iter(fun ((x, y), i) -> a.[y, x] <- i.[0])
-    let rec incrementAndCheck(a:int[,], last:int) =
-        
-        if isSolved a then a //Solved!
-        else
-            let theI = zeros.[0] 
-            if (last < 9) then 
-                increment a (fst theI) (last+1)
-                incrementAndCheck(a, last+1)
-            else a
-    incrementAndCheck(a, 0)
-
-
+    let workState = zeros |> Array.map(fun ((x, y), a) -> (a.[0], a))
+    incrementWorkState(workState)
+    
 let answers = 
     problems
-    |> Seq.map simpleSolve
+    |> Seq.skip 1
     |> Seq.map complexSolve
-    |> Seq.nth 0
+    |> Seq.head
 
 printfn "%A" (answers)
