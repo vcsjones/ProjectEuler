@@ -115,13 +115,35 @@ type Hand(list : List<Card>) =
 
    member this.RoyalFlush : int option =
       if this.StraightFlush |> Option.exists(fun x -> x = 14) then Some(14) else None
-   interface System.IComparable with
-      member this.CompareTo(otherHand:obj) =
-         let compararo (left:int option) (right:int option) : (int option) = 
-            
-         let other = otherHand :?> Hand
          
-
+let compareHands (hand1 : (int * Hand)) (hand2 : (int * Hand)) problem : int =
+   let compraro (hand1 : (int * Hand)) (hand2 : (int * Hand)) (applier : Hand -> int option) : int option =
+      let firstHand = snd hand1
+      let secondHand = snd hand2
+      if firstHand |> applier |> Option.isSome && secondHand |> applier |> Option.isSome then
+         let firstValue = firstHand |> applier |> Option.get
+         let secondValue = secondHand |> applier |> Option.get
+         if firstValue = secondValue then
+            if firstHand.HasHighest secondHand then Some(fst hand1) else Some(fst hand2)
+         elif firstValue > secondValue then Some(fst hand1)
+         else Some(fst hand2)
+      elif firstHand |> applier |> Option.isSome && secondHand |> applier |> Option.isNone then Some(fst hand1)
+      elif firstHand |> applier |> Option.isNone && secondHand |> applier |> Option.isSome then Some(fst hand2)
+      else None
+   let drawings = [
+                     compraro hand1 hand2 (fun x -> x.RoyalFlush);
+                     compraro hand1 hand2 (fun x -> x.StraightFlush);
+                     compraro hand1 hand2 (fun x -> x.FourOfAKind);
+                     compraro hand1 hand2 (fun x -> x.FullHouse);
+                     compraro hand1 hand2 (fun x -> x.Flush);
+                     compraro hand1 hand2 (fun x -> x.Straight);
+                     compraro hand1 hand2 (fun x -> x.ThreeOfAKind);
+                     compraro hand1 hand2 (fun x -> x.TwoPair);
+                     compraro hand1 hand2 (fun x -> x.OnePair);
+                     compraro hand1 hand2 (fun x -> Some(x.HighCard.Value));
+                  ]
+   drawings |> List.pick(fun x -> x)
+   
 
 type Set =
    {
@@ -130,11 +152,6 @@ type Set =
       Player2 : Hand;
    }
 
-let testHand = new Hand([{Suit = Spade; Value = 10}; {Suit = Spade; Value = 11};
-                           {Suit = Spade; Value = 12}; {Suit = Spade; Value = 13}; {Suit = Spade; Value = 14}])
-
-printfn "%A" (testHand.Score)
-(*
 let hands = 
    System.IO.File.ReadLines(".\poker.txt")
    |> Seq.map(fun x -> x.Split(' '))
@@ -143,5 +160,6 @@ let hands =
                            Player1 = new Hand(x |> Seq.take 5 |> Seq.map(fun y -> parseCard(y)) |> Seq.toList);
                            Player2 = new Hand(x |> Seq.skip 5 |> Seq.take 5 |> Seq.map(fun y -> parseCard(y)) |> Seq.toList);
                        })
-   |> Seq.filter (fun x -> x.Player1 > x.Player2)
-*)
+   |> Seq.filter (fun x -> compareHands (1, x.Player1) (2, x.Player2) x.Number = 1)
+
+printfn "%i" (hands |> Seq.length)
