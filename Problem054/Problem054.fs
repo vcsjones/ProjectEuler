@@ -69,7 +69,7 @@ type Hand(list : List<Card>) =
       let grouping = this.Cards |> List.toSeq |> Seq.groupBy(fun x -> x.Value)
       let two = grouping |> Seq.filter(fun (_, v) -> v |> Seq.length = 2)
       let three = grouping |> Seq.filter(fun (_, v) -> v |> Seq.length = 3)
-      if two |> Seq.length = 1 && three |> Seq.length = 1 then Some(three |> Seq.head |> fst) else None
+      if two |> Seq.length = 1 && three |> Seq.length = 1 then Some(three |> Seq.map fst |> Seq.max) else None
 
    member this.FourOfAKind : int option =
       singleGroupOfSize 4
