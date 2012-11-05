@@ -60,10 +60,10 @@ type Hand(list : List<Card>) =
          | head :: tail when head.Value = next -> check tail (head.Value-1) original
          | [] -> Some(original)
          | _ -> None
-      check this.Cards this.Cards.Head.Value this.Cards.Head.Value
+      check this.Cards this.HighCard.Value this.HighCard.Value
       
    member this.Flush : int option =
-      if this.Cards |> List.forall(fun x -> x.Suit = this.Cards.Head.Suit) then Some this.Cards.Head.Value else None
+      if this.Cards |> List.forall(fun x -> x.Suit = this.Cards.Head.Suit) then Some this.HighCard.Value else None
 
    member this.FullHouse : int option =
       let grouping = this.Cards |> List.toSeq |> Seq.groupBy(fun x -> x.Value)
