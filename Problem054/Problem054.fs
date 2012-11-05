@@ -83,17 +83,16 @@ type Hand(list : List<Card>) =
          
 let compareHands (hand1 : (int * Hand)) (hand2 : (int * Hand)) : int =
    let compraro (applier : Hand -> int option) : int option =
-      let firstHand = snd hand1
-      let secondHand = snd hand2
-      if firstHand |> applier |> Option.isSome && secondHand |> applier |> Option.isSome then
-         let firstValue = firstHand |> applier |> Option.get
-         let secondValue = secondHand |> applier |> Option.get
+      let firstHand, secondHand = (snd hand1, snd hand1 |> applier), (snd hand2, snd hand2 |> applier)
+      if firstHand |> snd |> Option.isSome && secondHand |> snd |> Option.isSome then
+         let firstValue = firstHand |> snd |> Option.get
+         let secondValue = secondHand |> snd |> Option.get
          if firstValue = secondValue then
-            if firstHand.HasHighest secondHand then Some(fst hand1) else Some(fst hand2)
+            if (fst firstHand).HasHighest (fst secondHand) then Some(fst hand1) else Some(fst hand2)
          elif firstValue > secondValue then Some(fst hand1)
          else Some(fst hand2)
-      elif firstHand |> applier |> Option.isSome && secondHand |> applier |> Option.isNone then Some(fst hand1)
-      elif firstHand |> applier |> Option.isNone && secondHand |> applier |> Option.isSome then Some(fst hand2)
+      elif firstHand |> snd |> Option.isSome && secondHand |> snd |> Option.isNone then Some(fst hand1)
+      elif firstHand |> snd |> Option.isNone && secondHand |> snd |> Option.isSome then Some(fst hand2)
       else None
    seq {
       yield compraro (fun x -> x.RoyalFlush)
