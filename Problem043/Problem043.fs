@@ -19,8 +19,8 @@ let testNumber (str : char list) =
 let answer = 
     pandigitalNumbers
     |> Seq.filter(testNumber)
-    |> Seq.map(fun x -> bigint.Parse(new string(x |> List.toArray)))
+    |> Seq.map(fun x -> new string(x |> List.toArray) |> int64)
     |> Seq.sum
 
 
-printfn "%A" answer
+printfn "%d" answer
