@@ -1,113 +1,98 @@
-﻿open System.IO
+﻿open Common
+open System.IO
+open System.Text
 open System.Text.RegularExpressions
 
-let tm apply t =
-    (t |> fst |> apply, t |> snd |> apply)
+type Puzzle(data : int option[,]) = 
 
-module Array =
-    let last (a:'T[]) = a.[(a |> Array.length) - 1]
+    static let width = 9
+    static let height = 9
+    static let cellsize = 3
+    static let n nz = (nz / cellsize) * cellsize
+
+    static let flatten (a:'T[,]) =
+        seq {
+            for d1 in [0.. (a |> Array2D.length1)-1] do
+                for d2 in [0 .. (a |> Array2D.length2)-1] do
+                    yield a.[d1, d2]
+        }
+    
+    let superState : (int[] * int * int) [,] =
+        let valids = [1..9] |> Set.ofList
+        Array2D.init 9 9 (fun x y ->
+                match data.[x, y] with
+                | Some _ ->
+                    (Array.empty, x ,y)
+                | None ->
+                    let xAxis = Array2D.init 1 width (fun _ j -> data.[j, y]) |> flatten
+                    let yAxis = Array2D.init 1 height (fun _ j -> data.[x, j]) |> flatten
+                    let cell = Array2D.init cellsize cellsize (fun i j -> data.[n x + i, n y + j]) |> flatten
+                    let known = seq { yield! xAxis; yield! yAxis; yield! cell} |> Seq.choose id |> Set.ofSeq
+                    (valids - known |> Set.toArray, x, y)
+            )
+
+    static member Zero = 
+        Puzzle(Array2D.init width height (fun _ _ -> None))
+
+    member private this.Contents = data
+
+    member this.State = superState
+
+    member this.Minimize() = 
+        if superState |> flatten |> Seq.forall(fun (arr, _, _) -> arr |> Array.length <> 1) then this 
+        else
+            let rec simplify (p : Puzzle) =
+                let fixup = p.State |> flatten |> Seq.tryFind(fun (arr, y, x) -> arr |> Array.length = 1)
+                match fixup with
+                | Some (arr, y, x) -> simplify (p.Set (x, y) (Some arr.[0]))
+                | None -> p
+            simplify this
+
+    member this.Set (x, y) value =
+        let copy = Array2D.copy data
+        copy.[y, x] <- value
+        Puzzle(copy)
+
+    member this.AxisX row =
+        Array2D.init 1 width (fun _ j -> data.[row, j]) |> flatten
+
+    member this.AxisY column =
+        Array2D.init 1 height (fun i _ -> data.[i, column]) |> flatten
+
+    member this.QuadrantForCell x y =
+        Array2D.init cellsize cellsize (fun i j -> data.[n y + i, n x + j])
+
+    member this.Item
+        with get (x, y) = data.[y, x]
+
+    member this.IsSolved = 
+        data |> flatten |> Seq.forall Option.isSome
+
+    override this.ToString() =
+        let builder = new StringBuilder()
+        for x in [0..8] do
+            if x<> 0 then builder.AppendLine() |> ignore
+            if x%3=0 then builder.AppendLine(new System.String('─', 11)) |> ignore
+            for y in [0..8] do
+                if (y%3=0 && y > 0) then builder.Append("│") |> ignore
+                builder.Append(match this.[x, y] with | Some x -> x.ToString() | None -> " ") |> ignore
+        builder.ToString()
+
+    interface System.IEquatable<Puzzle> with
+        member this.Equals(other : Puzzle) = 
+            flatten this.Contents |> Seq.zip (flatten other.Contents) |> Seq.forall(fun (a, b) -> a = b)
 
 let problems =
     Regex.Split(File.ReadAllText("sudoku.txt"), @"^Grid \d\d", RegexOptions.Multiline)
     |> Array.filter(fun x -> x.Trim().Length > 0)
     |> Array.map(fun x -> 
-                        let y = Regex.Split(x.Trim(), @"\r\n")
-                                |> Array.map(fun x -> x.ToCharArray() |> Array.map(fun x -> int(x) - 0x30))
-                        array2D(y))
-
-let numbers = [|1..9|] |> Set.ofArray
-
-let flatten (a:'T[,]) =
-    seq { for y in a -> y :?> 'T }
-    |> Seq.toArray
-
-let quadrant (a:int[,]) (x:int, y:int) =
-    let inline n nz = (nz / 3) * 3
-    Array2D.init 3 3 (fun i j -> a.[n y + i, n x + j])
-
-let axes (a:int[,]) (x:int, y:int) =
-    let xa = Array2D.init 1 9 (fun i j -> a.[y, j]) |> flatten
-    let ya = Array2D.init 9 1 (fun i j -> a.[i, x]) |> flatten
-    (xa, ya)
-
-let solutions (a:int[,]) (x:int, y:int) = 
-    let quad = quadrant a (x,y)
-    let quadExclude = flatten quad |> Array.filter(fun x -> x <> 0)
-    let axesExclude = 
-        let a = axes a (x, y)
-        (fst a) |> Array.append (snd a)
-    let excludes = quadExclude |> Array.append axesExclude |> Set.ofArray
-    numbers - excludes |> Set.toArray
-
-//Fill in all of the places that require no guessing. This can also be used
-//On complex problems to reduce the complexity for spaces that have known answers
-let simpleSolve (a:int[,]) =
-    let a = a |> Array2D.copy
-    let w = (a |> Array2D.length1)-1
-    let h = (a |> Array2D.length2)-1
-    let rec doSolve (a:int[,]) = 
-        let mutable affected = 0
-        for x in [0.. w] do
-            for y in [0.. h] do
-                if a.[y,x] = 0 then
-                    let sol = solutions a (x, y)
-                    if sol |> Array.length = 1 then
-                        a.[y, x] <- sol.[0]
-                        affected <- affected + 1
-        if affected = 0 then a else doSolve a
-    doSolve a
-
-let getZeros (a:int[,]) =
-    seq {
-    let w = (a |> Array2D.length1)-1
-    let h = (a |> Array2D.length2)-1
-    for x in [0.. w] do
-            for y in [0.. h] do
-                if a.[y,x] = 0 then yield (x,y)
-    }
+                        let y = Regex.Split(x.Trim(), @"\r\n") |> Array.map(fun x -> x.ToCharArray() |> Array.map(fun x -> int(x) - 0x30) |> Array.map(fun x -> if x=0 then None else Some x))
+                        Puzzle(array2D(y)))
 
 
-//Verify it is solved correctly
-//Has overhead. Review candidate.
-let isSolved (a:int[,]) = 
-    let w = (a |> Array2D.length1) - 1
-    let h = (a |> Array2D.length2) - 1
-    let mutable pass = true
-    for x in [0..w] do
-        for y in [0..h] do
-            let coordinate = (x, y)
-            let quad = quadrant a coordinate |> flatten |> Set.ofArray = numbers
-            let ax = axes a coordinate |> tm (fun x -> x |> Set.ofArray = numbers)
-            pass <- pass && quad && fst ax && snd ax
-    pass
-
-let incrementWorkState(ws:(int * array<int>)[]) = 
-    let rec inc (i:int) = 
-        let item = ws.[i]
-        let current = fst item
-        let possibles = snd item
-        let last = possibles |> Array.last
-        if current <> last then
-            let next = possibles.[(possibles |> Array.findIndex(fun x -> x = current))+1]
-            let newItem = (next, possibles)
-            printfn "%A" newItem
-            ws.[i] <- newItem
-    inc 0
-        
-
-let complexSolve (a:int[,]) = 
-    let a = a |> Array2D.copy
-    let zeros = getZeros a
-                |> Seq.map(fun x -> (x, solutions a x)) 
-                |> Seq.toArray
-                |> Array.sortBy(fun (_, x) -> x |> Array.length)
-    let workState = zeros |> Array.map(fun ((x, y), a) -> (a.[0], a))
-    incrementWorkState(workState)
-    
-let answers = 
+let minimized = 
     problems
-    |> Seq.skip 1
-    |> Seq.map complexSolve
-    |> Seq.head
+    |> Seq.map(fun x -> x.Minimize())
+    |> Seq.filter(fun x -> not x.IsSolved)
 
-printfn "%A" (answers)
+printfn "%A" (minimized |> Seq.length)

@@ -2,11 +2,9 @@
    new string(str.ToCharArray() |> Array.rev)
 
 let answer =
-   seq {
-      for x in [100..999] do
-         for y in [100..999] do
-            yield x*y
-   }
+   [100..999]
+   |> Seq.map(fun m -> ( Seq.init (m |> int) (fun _ -> m), [1..m]))
+   |> Seq.collect(fun (l1, l2) -> Seq.zip l1 l2 |> Seq.map(fun (x, y) -> x*y))
    |> Seq.map(fun x -> (x, x.ToString()))
    |> Seq.filter(fun (x,s) -> s = (revString s))
    |> Seq.maxBy fst
