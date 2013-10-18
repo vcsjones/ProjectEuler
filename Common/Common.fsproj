@@ -43,6 +43,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Timer.fs" />
     <Compile Include="Seq.fs" />
   </ItemGroup>
   <PropertyGroup>

@@ -1,10 +1,6 @@
 ﻿namespace Common
+open System
 
-module Array2D =
-    let flatten(source:'T[,]) : 'T[] = 
-        seq {
-            for d1 in [0.. (source |> Array2D.length1)-1] do
-                for d2 in [0 .. (source |> Array2D.length2)-1] do
-                    yield source.[d1, d2]
-        }
-        |> Seq.toArray
+module Seq =
+    let equal (source : seq<'T> when 'T : equality) (against : seq<'T>) : bool = 
+        (Seq.zip source against) |> Seq.forall(fun (x, y) -> x = y)

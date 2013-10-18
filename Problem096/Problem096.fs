@@ -1,7 +1,15 @@
 ﻿open Common
+open Common.Timer
 open System.IO
 open System.Text
 open System.Text.RegularExpressions
+
+let flatten (a:'T[,]) =
+    seq {
+        for d1 in [0.. (a |> Array2D.length1)-1] do
+            for d2 in [0 .. (a |> Array2D.length2)-1] do
+                yield a.[d1, d2]
+    }
 
 type Puzzle(data : int option[,]) = 
 
@@ -9,13 +17,6 @@ type Puzzle(data : int option[,]) =
     static let height = 9
     static let cellsize = 3
     static let n nz = (nz / cellsize) * cellsize
-
-    static let flatten (a:'T[,]) =
-        seq {
-            for d1 in [0.. (a |> Array2D.length1)-1] do
-                for d2 in [0 .. (a |> Array2D.length2)-1] do
-                    yield a.[d1, d2]
-        }
     
     let superState : (int[] * int * int) [,] =
         let valids = [1..9] |> Set.ofList
@@ -39,14 +40,16 @@ type Puzzle(data : int option[,]) =
     member this.State = superState
 
     member this.Minimize() = 
-        if superState |> flatten |> Seq.forall(fun (arr, _, _) -> arr |> Array.length <> 1) then this 
-        else
-            let rec simplify (p : Puzzle) =
-                let fixup = p.State |> flatten |> Seq.tryFind(fun (arr, y, x) -> arr |> Array.length = 1)
-                match fixup with
-                | Some (arr, y, x) -> simplify (p.Set (x, y) (Some arr.[0]))
-                | None -> p
-            simplify this
+        duration "Minimize" (fun () ->
+            if superState |> flatten |> Seq.forall(fun (arr, _, _) -> arr |> Array.length <> 1) then this 
+            else
+                let rec simplify (p : Puzzle) =
+                    let fixup = p.State |> flatten |> Seq.tryFind(fun (arr, y, x) -> arr |> Array.length = 1)
+                    match fixup with
+                    | Some (arr, y, x) -> simplify (p.Set (x, y) (Some arr.[0]))
+                    | None -> p
+                simplify this
+        )
 
     member this.Set (x, y) value =
         let copy = Array2D.copy data
@@ -80,7 +83,7 @@ type Puzzle(data : int option[,]) =
 
     interface System.IEquatable<Puzzle> with
         member this.Equals(other : Puzzle) = 
-            flatten this.Contents |> Seq.zip (flatten other.Contents) |> Seq.forall(fun (a, b) -> a = b)
+            flatten this.Contents |> Seq.equal (flatten other.Contents)
 
 let problems =
     Regex.Split(File.ReadAllText("sudoku.txt"), @"^Grid \d\d", RegexOptions.Multiline)
@@ -89,10 +92,14 @@ let problems =
                         let y = Regex.Split(x.Trim(), @"\r\n") |> Array.map(fun x -> x.ToCharArray() |> Array.map(fun x -> int(x) - 0x30) |> Array.map(fun x -> if x=0 then None else Some x))
                         Puzzle(array2D(y)))
 
+let solve (p : Puzzle) : Puzzle = 
+    let minimized = p.Minimize()
+    if minimized.IsSolved then minimized
+    else
+        let rec scan (p : Puzzle) (x, y) = 
+            let state = p.State |> flatten |> List.ofSeq
+            match state with
+            | head :: tail -> p
+            | [] -> p
+        scan p (0,0)
 
-let minimized = 
-    problems
-    |> Seq.map(fun x -> x.Minimize())
-    |> Seq.filter(fun x -> not x.IsSolved)
-
-printfn "%A" (minimized |> Seq.length)
