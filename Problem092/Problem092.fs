@@ -1,6 +1,7 @@
 ﻿open System
 open System.Threading
 open System.Threading.Tasks
+open Common.Concurrency
 
 let sumDigitSquares n =
       n.ToString().ToCharArray()
@@ -13,7 +14,7 @@ let findDigitSquare n =
       match l with
       | 1 -> false
       | 89 -> true
-      | x -> loop(sumDigitSquares(x))
+      | x -> loop(sumDigitSquares x)
    loop n
 
 let actImpl n pls loc = 
@@ -22,6 +23,6 @@ let actImpl n pls loc =
 
 let counter = ref 0
 
-Parallel.For(1, 10000000, (fun () -> 0), actImpl, (fun n -> Interlocked.Add(counter, n) |> ignore)) |> ignore
+Parallel.For(1, 10000000, (fun () -> 0), actImpl, (fun n -> interlockAdd counter n |> ignore)) |> ignore
 
 printfn "answer = %d" !counter
